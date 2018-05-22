@@ -1,0 +1,15 @@
+HDFS块为什么这么大?
+    1.为了增加读写效率,让寻址时间占传输时间比例更小.
+    2.块不能设置过大,因为MR任务一次处理一个block,如果block过大,block数量就会太少, 一项任务的总block数量少于计算节点数量,不能让所有节点同时计算,降低了计算速度.
+    3.如果一个文件小于block尺寸,那么实现占用的物理存储不会是128M,那么如果后期写入或修改文件则不可以对该block进行扩展,所以HDFS最好是一次写入,多次读%hdfs fsck / -files -blocks  //查看文件系统由哪些块构成.
+    %hdfs fsck / -files -blocks  //查看文件系统由哪些块构成.
+
+DataNode块缓存: 为了增加热点数据读写性能,频繁使用的文件对应的block被显式的以堆外块缓存(off-heap block cache)的形式缓存在datanode的内存中.
+
+联邦HDFS
+    1.在hdfs中增加多个namenode, 每个namenode对应一个文件系统命名空间和一个数据块池(block pool),namenode之间互相独立,datanode需要注册到每个namenode.
+    2.client使用客户端挂载数据表(client-side mount talbes)将文件路径映射到namenode. 该功能通过ViewFileSystem和viewfs://URI进行配置和管理.
+    
+QJM(quotum journal manager)以一组Journal Node形式运行, QJM没有使用Zookeeper.
+
+

@@ -1,0 +1,100 @@
+1.开始
+2.安装前准备
+    硬件准备:
+    1.CPU:最低双路4核心,推荐双路8核心.  64bit
+    2.内存64G
+    3.网卡: 管理bond  业务bond   外部管理bond
+    4.RAID: 管理/控制 RAID1   数据:无须RAID
+    5.磁盘数量
+        所有节点分设：
+            管理节点：每个节点3个磁盘（1个OS盘、2个元数据盘，即2+4块物理磁盘）
+            控制节点：每个节点5个磁盘（1个OS盘、4个元数据盘，即2+8块物理磁盘）
+            数据节点：每个节点10个磁盘（1个OS盘、9个数据盘，即2+9块物理磁盘）
+        管理节点和控制节点合设、数据节点分设：
+            管理节点+控制节点：每个节点7个磁盘（1个OS盘、6个元数据盘，即2+12块物理磁盘）
+            数据节点：每个节点10个磁盘（1个OS盘、9个数据盘，即2+9块物理磁盘）
+        所有节点合设：每个节点16个磁盘（1个OS盘、6个元数据盘、9个数据盘，即2+12+9块物理磁盘）
+        //建议每个盘>=600G
+
+    系统准备:
+    1.所有节点root密码一致
+    2.CentOS  6.4---7.3
+    3.OS盘分区(手动进行)  >600G
+        /   20G
+        /tmp    10G
+        /var    10G     操作系统运行时目录
+        /var/log    200G (最少不小于130G)   日志目录,ResourceManager NameNode等节点的日志
+        /srv/BigData    60G     做为FusionManager的数据目录,同时为组件数据目录提供挂载点.
+        /opt    >=300G  OS盘剩余容量都给/opt       软件安装路径所在分区(程序存放目录)
+    4.元数据盘分区: (在"配置并检查安装环境"时自动分区, 不要手工操作)
+        ManagementNode
+           Manager DB   /srv/BigData/dbdata_om  独占一盘 >600G
+           LocalBackup  /srv/BigData/LocalBackup    独占一盘 >600G
+        ControlNode
+           DBService    /srv/BigData/dbdata_service     独占一盘 >600G
+           Zookeeper    /srv/BigData/zookeeper  独占一盘>600G
+           Journalnode  /srv/BigData/journalnode    独占一盘>600G
+           Nodenode     /srv/BigData/namenode   独占一盘 >600G
+           Storm        /srv/BigData/storm  独占一盘 >600G
+    5.数据盘分区: (在"配置并检查安装环境"时自动分区,不要手工操作)
+        DataNode
+            /srv/BigData/hadoop/dataX   //独占一盘 >500G
+
+    工具和软件准备
+    1. CRT/Putty
+    2. WinSCP
+    3. Browser: Chrome 21以上 / FireFox 31以上
+    4. JDK 1.8   自带
+    5. 7-zip/WinRAR
+    6. FusionInsight配置规划工具    //生成配置文件,注意版本
+    7. FusionInsight HD版本说明书
+    8. FusionInsight HD软件:
+        FusionInsight_Manager：OMSServer、LdapServer、KrbServer、DBService
+        FusionInsight_HD：ZooKeeper、HDFS、Yarn、Mapreduce、HBase、SmallFS、Hive、Spark、Solr、Kafka、Storm、Redis。FusionInsight HD依赖于FusionInsight Manager部件包。
+        FusionInsight_Porter：Hue、Metadata、FTP-Server、Flume、Oozie、Loader。FusionInsight Porter依赖于FusionInsight Manager和FusionInsight HD部件包。
+        FusionInsight_SetupTool：包含安装过程中需要使用的脚本工具。
+    
+    数据准备
+    >节点IP:
+    1.各节点管理平面IP:   10.70.2.X
+    2.各节点业务平面IP:   172.16.11.X
+    3.主备管理节点的外部管理IP:  192.168.1.X  
+    >浮云IP:
+    OMSServer浮云IP/接口/掩码/网关 (管理平面网段)
+    OMWebServer浮云IP/接口/掩码/网关 (外部管理网段),用于访问FusionManager 也可以使用管理平面或业务平面的网段地址
+    Hue浮云IP (业务平面)
+    DBSservice浮云IP/网关(业务平面)
+    Loader浮云IP(业务平面)
+    Solr浮云IP(业务平面)
+    >其它信息
+    root密码
+    FusionInsight初始用户名和密码
+    主机名  //不可重复, 一个主机名与该主机业务地址对应  hostnamectl set-hostname  XXXX  //设置hostname
+
+3.检验软件包
+    1. 使用WinSCP上传所有软件包(Manager/HD/Porter/SetupTool)到主备管理节点的/opt目录下.
+    2. sha256sum -c CheckFileName.sha256    //对软件名进行校验.
+    3. 在/opt下解压Manager和SetupTool两个包.
+    4. 复制HD和Porter到解压后的Manager的指定目录.
+        cp FusionInsight_HD_V100R002C70SPC200_RHEL.tar.gz FusionInsight_Manager/software/packs/
+        cp FusionInsight_Porter_V100R002C70SPC200_RHEL.tar.gz FusionInsight_Manager/software/packs/
+        //在备管理节点做同样的操作***
+    5. 上传CentOS的ISO镜像至主管理节点的/opt目录下.
+    6. mount /opt/CentOS.iso /media/ -o loop   //挂载系统镜像至/media, 用于后续RPM包的安装.
+    7. 使用root登录任一节点, 执行locale命令,查看OS的编码格式是否为"en_US.UTF-8"或"POSIX".
+    8. 如果编码文件与预期不符: 
+        RedHat 7.X系统下执行vi /etc/locale.conf命令，将“LANG”的值修改为“en_US.UTF-8”，“SYSFONT”的值修改为“latarcyrheb-sun16”，并保存退出，重启操作系统后配置生效。
+    9. 如果使用root安装manager,操作结束. 如果使用omm帐号安装,查阅华为产品文档"安装过程"->"检验软件包"
+
+    
+4.生成配置文件
+5.配置并检查安全环境
+6.安装双机Manager
+7.安装集群
+8.加载License
+9.安装后检查 
+10.初始配置
+11结束
+
+
+
