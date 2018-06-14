@@ -39,7 +39,7 @@
     5.数据盘分区: (在"配置并检查安装环境"时自动分区,不要手工操作)
         DataNode
             /srv/BigData/hadoop/dataX   //独占一盘 >500G
-
+        //注意时间一致: ESXi/VCSA/CentOS时间一致.
     工具和软件准备
     1. CRT/Putty
     2. WinSCP
@@ -69,7 +69,7 @@
     >其它信息
     root密码
     FusionInsight初始用户名和密码
-    主机名  //不可重复, 一个主机名与该主机业务地址对应  hostnamectl set-hostname  XXXX  //设置hostname
+    主机名  //不可重复, 一个主机名与该主机业务地址对应  hostnamectl set-hostname  XXXX  //设置hostname,  需要手工在/etc/hosts文件中添加主机名与业务地址映射关系
 
 3.检验软件包
     1. 使用WinSCP上传所有软件包(Manager/HD/Porter/SetupTool)到主备管理节点的/opt目录下.
@@ -95,6 +95,4 @@
 9.安装后检查 
 10.初始配置
 11结束
-
-
 
