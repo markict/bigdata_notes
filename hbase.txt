@@ -1,0 +1,51 @@
+Basic Commands
+    source /opt/hadoopclient/bigdata_env 
+    hbase shell // connect to the HBase
+    help [Command]  //Display HBase shell help text
+    list // list the tables in hbase
+    create 'Table_Name', 'Column_Family'  //create a table
+    describe 'Table_Name'  //display the details, including configuration defaults
+    put 'Table_Name', 'Row_Key', 'ColumnFamily:Qualifier', 'Value'  //put data in your table
+    delete 'table', 'row', 'columnfamily:qualifier' //delete a cell from a row
+    deleteall 'table', 'row'  //delete all the value of the line(row)
+    scan 'Table_Name'  //scan the table for all data at once.
+    scan 'Table_Name', {COLUMNS=>'ColumnFamliy'}
+    scan 'Table_Name', {COLUMNS=>['ColumnFamily:Qualifier1','ColumnFamily:Qualifier2']}
+    scan 'Table_Name', {STARTROW=>'008', 'LIMIT'=>2}
+        Filter:
+        scan 'table', {FILTER=>"ValueFilter(=,'binary:40')"}  
+        scan 'table', {FILTER=>"ColumnPrefixFilter('gender')"}
+
+
+    get 'table_name', 'row_key', ['ColumnFamily:Qualifier']
+    count 'table_name'  //returns the number of rows in a table.
+    disable 'table_name' // Disabe a table
+    drop 'table_name'  //drop the table
+    enable 'table_name'  //enable the table
+
+    create 'table_name', 'column_family', SPLITS => ['10', '20', '30'] //create a pre-splitting table
+    create_namespace 'my_ns'  //create a namespace
+    creat 'my_ns:my_table', 'ColumnFamily'  //creat a table under the given namespace
+    drop_namespace 'my_ns'//drop namespace
+    alter_namespace 'my_ns', {...}  //alter namespace
+    list_namespace //list namespaces
+
+Version Operations:
+    alter 'table', NAME => 'columnfamily', VERSIONS => 5  //modify the maximum number of versions for a column family.
+    alter 'table', NAME => 'columnfamily', MIN_VERSIONS => 2 //modify the minimum number of versions for a column family.
+    scan 'table', {VERSIONS => 5}  //display the last 5 versions 
+    alter 'table', NAME => 'columnfamily', KEEP_DELETED_CELLS => true //keep deleted cells.
+    flush 'table' //flush the content from memstore to HFile
+    major_compact 'table'  //major compact the table.
+
+
+hbase shell ./test_commands.txt  //read Hbase shell commands from a command file
+
+
+Table variables:
+    nd = create 'node_db','info'  //create a table and assign it to a variable
+    nd.describe
+    nd.put '001', 'info:name', 'ZhangLiang'
+
+    mk = get_table 'mark_db'  // if the table has already been created, we can assign a table to a variable by using get_table method.
+

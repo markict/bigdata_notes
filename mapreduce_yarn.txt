@@ -1,0 +1,27 @@
+YARN
+角色:
+    Resource Manager    (管理节点)
+    Node Manager / Container   (所有节点)
+    Application Client
+工作流程:
+    1.Application Client联系ResourceManager进程,要求运行一个applicaton master进程.
+    2.ResourceManager找到一个可以运行Container的NodeManater,创建Container,在该Container中运行AppMaster.
+    3.AppMaster向ResourceManager申请更多的Container以运行分布式计算.
+      ***应用申请Container的优先原则: 如果一个容器用于处理HDFS的数据块: 1.优先向存储该数据三个复本的节点申请,2.或存储这些复本的机架上的节点申请,3.如果都失败,在集群中任意节点申请.
+      ***容器申请两种方式:
+        1.在最开始提出的有申请: (Spark)   
+        2.根据需要动态申请: MapReduce, 开始先申请Map容器,后期申请启用Reduce容器.
+
+YARN中的调度:
+    1.FIFO调度(FIFO Scheduler)
+        先进先出,配置简单,大作业独占资源,小作业长期阻塞.
+    2.容量调度(Capacity Scheduler)
+        属于资源预留的思想, 为小作业预留资源队列,牺牲群集整体利用率.
+        ***队列放置:应用放置于哪个队列,取决于应用本身,例如MapReduce中,可能设置mapreduce.job.queuename指定队列名称,如果队列不存在,提交错误. 如果不指定列队,提交至default队列.
+    3.公平调度(Fair Scheduler)
+        当只有一个作业时,该作业独占资源,当第二个作业启动时会分得集群一半资源,但是第二个作业启动到获得资源之间是有延迟的,必须等到第一个大作业释放资源.
+        公平队列中,用户之间均分集群资源,同一个用户下的作业在用户下的总资源平分资源.
+
+
+MapReduce:
+

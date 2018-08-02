@@ -1,5 +1,6 @@
 Power On the System:
     1. sh ${BIGDATA_HOME}/om-0.0.1/sbin/start-oms.sh   //execute this command on both two manager node  
+       sh /opt/huawei/Bigdata/om-server/om/sbin/start-oms.sh //If above PATH doesn't exist, use this path.
     2. Login the FusionInsight Manager through the web browser.
     3. "Services"-->"More Action"-->"start cluster"
 Power Off the System:
@@ -7,5 +8,6 @@ Power Off the System:
     2. "Services"-->"More Action"-->"stop cluster" 
     3. login both two manager node by SSH.
     4. sh ${BIGDATA_HOME}/om-0.0.1/sbin/stop-oms.sh     //execute this command on both two manager node.
+       sh /opt/huawei/Bigdata/om-server/om/sbin/stop-oms.sh //If above PATH doesn't exist, use this path.
     5. shutdown the server.
 

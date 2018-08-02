@@ -1,0 +1,22 @@
+*****************************************************************
+***Tables operation
+
+---Create table
+CREATE TABLE products
+(
+ prod_id    CHAR(10)    NOT NULL,
+ prod_name  CHAR(254)   NOT NULL,
+ prod_price DECIMAL(8,2)    NOT NULL  DEFAULT 10     //We can also use default value here
+);
+
+---Alter table
+ALTER TABLE products
+ADD vend_phone CHAR(20);    //add a new column 
+
+ALTER TABLE products
+DROP COLUMN vend_phone;     //delete a existed column
+
+---Drop table
+DROP TABLE products;  //drop the table
+
+
