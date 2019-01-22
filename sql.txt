@@ -20,3 +20,40 @@ DROP COLUMN vend_phone;     //delete a existed column
 DROP TABLE products;  //drop the table
 
 
+*****************************************************************
+***Insert data
+
+-------------------------------------------------------------------------
+INSERT INTO cga_info1     //insert values into table without columns' name. it's not recommended anymore.
+VALUES('Alice',
+        'female',
+        26);
+
+-------------------------------------------------------------------------
+INSERT INTO cga_info1 (name,              //recommended way to insert data
+                       gender,
+                       age)
+VALUES('Bob',
+        'male',
+        28);
+
+-------------------------------------------------------------------------
+INSERT INTO cga_info6 (gender,          //insert data that selected from other table(WHERE can be used)
+        name,
+        age)
+    SELECT gender,name,age FROM cga_info1;
+
+-------------------------------------------------------------------------
+CREATE TABLE cga_info5 AS SELECT * FROM cga_info6;   //copy data from a existed table to a new created table
+SELECT * INTO new_table FROM origin_table;   //copy data from origin table to new table
+
+-------------------------------------------------------------------------
+UPDATE cga_info5          //update value of the column that meets the requirements(WHERE)
+SET gender = 'male',
+    age = 23
+WHERE name = 'frank';    
+
+-------------------------------------------------------------------------
+DELETE FROM cga_info5     //delete the specified row 
+WHERE name = 'frank';
+
